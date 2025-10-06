@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سوهان   وِیژه امین  - طعم اصیل ایرانی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        
+        .bg-primary { background-color: #0b1022; }
+        .text-primary { color: #0b1022; }
+        .border-primary { border-color: #0b1022; }
+        
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+        
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: none;
+            overflow-y: auto;
+        }
+        
+        .admin-content {
+            background: white;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            border-radius: 0;
+            overflow-y: auto;
+            display: flex;
+        }
+        
+        .admin-sidebar {
+            width: 280px;
+            background: #1f2937;
+            color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        
+        .admin-main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f9fafb;
+        }
+        
+        .admin-menu-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #374151;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .admin-menu-item:hover {
+            background: #374151;
+        }
+        
+        .admin-menu-item.active {
+            background: #3b82f6;
+        }
+        
+        .admin-section {
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+        }
+        
+        .cart-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .product-card {
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-content {
+                width: 95%;
+                margin: 5% auto;
+                padding: 15px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-primary text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 ">
+            <div class="flex justify-between items-center py-2">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <img id="logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f59e0b'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3Eسوهان%3C/text%3E%3C/svg%3E" alt="لوگو" class="h-12 w-12 rounded-full">
+                    <h1 id="site-title" class="text-lg">سوهان ویژه امین   </h1>
+                </div>
+                
+                <div class="hidden md:flex space-x-6 space-x-reverse">
+                    <a href="#home" class="nav-link hover:text-yellow-400 transition text-[14px]">خانه</a>
+                    <a href="#about" class="nav-link hover:text-yellow-400 transition text-[14px]">درباره ما</a>
+                    <a href="#products" class="nav-link hover:text-yellow-400 transition text-[14px]">محصولات</a>
+                    <a href="#cart" class="nav-link hover:text-yellow-400 transition text-[14px]">سبد خرید</a>
+                    <a href="#contact" class="nav-link hover:text-yellow-400 transition text-[14px]">تماس با ما</a>
+                </div>
+                
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <button id="cart-btn" class="relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                    </button>
+                    <button id="mobile-menu" class="md:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-nav" class="md:hidden fixed top-0 right-0 h-full w-64 bg-primary transform translate-x-full transition-transform duration-300 z-50 pt-20">
+                <div class="p-4">
+                    <a href="#home" class="block py-3 hover:text-yellow-400 border-b border-gray-600 ">خانه</a>
+                    <a href="#about" class="block py-3 hover:text-yellow-400 border-b border-gray-600 ">درباره ما</a>
+                    <a href="#products" class="block py-3 hover:text-yellow-400 border-b border-gray-600">محصولات</a>
+                    <a href="#cart" class="block py-3 hover:text-yellow-400 border-b border-gray-600">سبد خرید</a>
+                    <a href="#contact" class="block py-3 hover:text-yellow-400 border-b border-gray-600">تماس با ما</a>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Overlay -->
+            <div id="mobile-overlay" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="min-h-screen border-t border-gray-700 bg-gray-900 from-primary to-gray-800 text-white">
+        <div class="container mx-auto ">
+            
+            <!-- Slider -->
+            <div class="w-full ">
+                <div id="slider" class="relative w-full h-screen overflow-hidden">
+                    <!-- Slides will be dynamically generated -->
+                </div>
+                <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-4 space-x-reverse z-10">
+                    <button id="prev-slide" class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-30 text-white px-6 py-3 rounded-full transition">
+                        <i class="fas fa-chevron-right text-xl"></i>
+                    </button>
+                    <button id="next-slide" class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-30 text-white px-6 py-3 rounded-full transition">
+                        <i class="fas fa-chevron-left text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl py-8 mx-auto">
+                <a href="#products" class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 text-center hover:bg-opacity-20 transition">
+                    <i class="fas fa-shopping-bag text-3xl mb-4 text-yellow-400"></i>
+                    <h3 class="font-semibold">محصولات</h3>
+                </a>
+                <a href="#about" class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 text-center hover:bg-opacity-20 transition">
+                    <i class="fas fa-info-circle text-3xl mb-4 text-yellow-400"></i>
+                    <h3 class="font-semibold">درباره ما</h3>
+                </a>
+                <a href="#cart" class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 text-center hover:bg-opacity-20 transition">
+                    <i class="fas fa-shopping-cart text-3xl mb-4 text-yellow-400"></i>
+                    <h3 class="font-semibold">سبد خرید</h3>
+                </a>
+                <a href="#contact" class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 text-center hover:bg-opacity-20 transition">
+                    <i class="fas fa-phone text-3xl mb-4 text-yellow-400"></i>
+                    <h3 class="font-semibold">تماس با ما</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-primary">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">درباره ما</h2>
+            
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-8">
+                    <p id="about-text" class="text-white text-lg leading-relaxed">
+                        شرکت سوهان و گز اصفهان با بیش از 50 سال تجربه در تولید بهترین سوهان و گز ایرانی، 
+                        افتخار ارائه محصولات با کیفیت و طعم اصیل را دارد. ما با حفظ روش‌های سنتی و استفاده از 
+                        بهترین مواد اولیه، محصولاتی تولید می‌کنیم که نماینده فرهنگ غنی ایران است. 
+                        هدف ما حفظ و انتقال طعم اصیل ایرانی به نسل‌های آینده و معرفی این محصولات ارزشمند به جهان است.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-20 border-t border-gray-700 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl text-[#ecf0f1] font-bold text-center text-primary mb-16">محصولات ما</h2>
+            
+            <!-- Category Filter -->
+            <div id="category-filters" class="flex flex-wrap justify-center mb-12 space-x-4 space-x-reverse">
+                <button class="category-filter active bg-primary text-white px-6 py-2 rounded-full mb-2" data-category="all">همه محصولات</button>
+                <!-- Dynamic categories will be added here -->
+            </div>
+            
+            <!-- Products Grid -->
+            <div id="products-grid" class="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Products will be dynamically generated -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section id="cart" class="py-20 border-t border-gray-700 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center text-[#ecf0f1] mb-16">سبد خرید</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div id="cart-items" class="mb-8">
+                    <p class="text-center text-gray-500">سبد خرید شما خالی است</p>
+                </div>
+                
+                <div id="cart-summary" class="hidden border border-gray-700 bg-gray-900 p-6 rounded-[16px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-semibold text-[#bdc3c7]">جمع کل:</span>
+                        <span id="cart-total" class="text-xl   text-[#bdc3c7]">0 تومان</span>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-4 text-[#bdc3c7]">نوع ارسال:</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="shipping" value="normal" class="ml-2" checked>
+                                <span class="text-[#bdc3c7] text-[13px]">ارسال عادی (رایگان)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="shipping" value="express" class="ml-2">
+                                <span class="text-[#bdc3c7] text-[13px]">ارسال پیشتاز (+50,000 تومان)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button id="checkout-btn" class="w-full bg-primary border-b border-t border-gray-700 text-white py-3 rounded-lg hover:bg-opacity-90 transition">
+                        ادامه خرید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 border-t border-gray-700 bg-primary text-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center mb-16">تماس با ما</h2>
+            
+            <div class="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                <div>
+                    <h3 class="text-xl font-bold mb-8">اطلاعات تماس</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-yellow-400 text-xl ml-4"></i>
+                            <div>
+                                <h4 class="font-semibold">آدرس کارخانه</h4>
+                                <p id="factory-address" class="text-[#bdc3c7] text-[13px]">اصفهان، خیابان چهارباغ، پلاک 123</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <i class="fas fa-phone text-yellow-400 text-xl ml-4"></i>
+                            <div>
+                                <h4 class="font-semibold">تلفن تماس</h4>
+                                <p id="phone-number" class="text-[#bdc3c7] text-[13px]">031-12345678</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <i class="fab fa-whatsapp text-yellow-400 text-xl ml-4"></i>
+                            <div>
+                                <h4 class="font-semibold">واتساپ</h4>
+                                <p id="whatsapp-number" class="text-[#bdc3c7] text-[13px]">09123456789</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <i class="fab fa-instagram text-yellow-400 text-xl ml-4"></i>
+                            <div>
+                                <h4 class="font-semibold">اینستاگرام</h4>
+                                <p id="instagram-handle" class="text-[#bdc3c7] text-[13px]">@sohan_gaz_isfahan</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-yellow-400 text-xl ml-4"></i>
+                            <div>
+                                <h4 class="font-semibold">ایمیل</h4>
+                                <p id="email-address" class="text-[#bdc3c7] text-[13px]">info@sohangaz.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl  mb-8">پیام به ما</h3>
+                    <form id="contact-form" class="space-y-4">
+                        <input type="text" placeholder="نام و نام خانوادگی" class="w-full p-3 rounded-lg text-primary border border-gray-700 bg-gray-900" required>
+                        <input type="tel" placeholder="شماره تماس" class="w-full p-3 rounded-lg text-primary border border-gray-700 bg-gray-900" required>
+                        <input type="email" placeholder="ایمیل" class="w-full p-3 rounded-lg text-primary border border-gray-700 bg-gray-900">
+                        <textarea placeholder="پیام شما" rows="5" class="w-full p-3 rounded-lg text-primary border border-gray-700 bg-gray-900" required></textarea>
+                        <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg transition">
+                            ارسال پیام
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900  text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="mb-8">
+                <img id="footer-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f59e0b'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3Eسوهان%3C/text%3E%3C/svg%3E" alt="لوگو" class="h-16 w-16 mx-auto rounded-full mb-4">
+                <h3 id="footer-title" class="text-lg">سوهان و گز اصفهان</h3>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h4 class=" mb-4">دسترسی سریع</h4>
+                    <div class="space-y-2">
+                        <a href="#home" class="block hover:text-yellow-400 transition  text-[13px]">خانه</a>
+                        <a href="#about" class="block hover:text-yellow-400 transition text-[13px]">درباره ما</a>
+                        <a href="#products" class="block hover:text-yellow-400 transition text-[13px]">محصولات</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class=" mb-4">خدمات</h4>
+                    <div class="space-y-2">
+                        <a href="#cart" class="block hover:text-yellow-400 text-[13px] transition">سبد خرید</a>
+                        <a href="#contact" class="block hover:text-yellow-400 text-[13px]  transition">تماس با ما</a>
+                        <a href="#" class="block hover:text-yellow-400 text-[13px] transition">پشتیبانی</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class=" mb-4">شبکه‌های اجتماعی</h4>
+                    <div class="flex justify-center space-x-4 space-x-reverse">
+                        <a href="#" class="text-2xl hover:text-yellow-400 transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-2xl hover:text-yellow-400 transition"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="text-2xl hover:text-yellow-400 transition"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-8">
+                <p>  سوهان و گز اصفهان. تمامی حقوق محفوظ است.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="admin-panel ">
+        <div class="admin-content">
+            <!-- Sidebar -->
+            <div class="admin-sidebar  ">
+                <div class="flex justify-between items-center px-5 pb-5 border-b border-gray-600">
+                    <h2 class="text-lg">پنل مدیریت</h2>
+                    <button id="close-admin" class="text-red-400 hover:text-red-300 text-2xl">&times;</button>
+                </div>
+                
+                <div class="mt-5">
+                    <div class="admin-menu-item active" data-section="dashboard">
+                        <div class="flex items-center">
+                            <i class="fas fa-tachometer-alt ml-3"></i>
+                            <span class="text-[14px]">داشبورد</span>
+                        </div>
+                        <i class="fas fa-chevron-left text-[10px]"></i>
+                    </div>
+                    
+                    <div class="admin-menu-item" data-section="content">
+                        <div class="flex items-center">
+                            <i class="fas fa-edit ml-3"></i>
+                            <span class="text-[14px]">مدیریت محتوا</span>
+                        </div>
+                        <i class="fas fa-chevron-left text-[10px]"></i>
+                    </div>
+                    
+                    <div class="admin-menu-item" data-section="images">
+                        <div class="flex items-center">
+                            <i class="fas fa-images ml-3"></i>
+                            <span class="text-[14px]">مدیریت تصاویر</span>
+                        </div>
+                        <i class="fas fa-chevron-left text-[10px]"></i>
+                    </div>
+                    
+                    <div class="admin-menu-item" data-section="slider">
+                        <div class="flex items-center">
+                            <i class="fas fa-sliders-h ml-3"></i>
+                            <span class="text-[14px]">مدیریت اسلایدر</span>
+                        </div>
+                        <i class="fas fa-chevron-left text-[10px]"></i>
+                    </div>
+                    
+                    <div class="admin-menu-item" data-section="products">
+                        <div class="flex items-center">
+                            <i class="fas fa-box ml-3"></i>
+                            <span class="text-[14px]">مدیریت محصولات</span>
+                        </div>
+                        <i class="fas fa-chevron-left text-[10px]"></i>
+                    </div>
+                    
+                    <div class="admin-menu-item" data-section="contact">
+                        <div class="flex items-center">
+                            <i class="fas fa-address-book ml-3"></i>
+                            <span class="text-[14px]">اطلاعات تماس</span>
+                        </div>
+                        <i class="fas fa-chevron-left text-[10px]"></i>
+                    </div>
+                    
+                    <div class="admin-menu-item" data-section="orders">
+                        <div class="flex items-center">
+                            <i class="fas fa-shopping-cart ml-3"></i>
+                            <span class="text-[14px]">مدیریت سفارشات</span>
+                        </div>
+                        <i class="fas fa-chevron-left text-[10px]"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="admin-main border border-gray-700 bg-gray-900 ">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="admin-section active">
+                    <h3 class="text-lg  mb-6 text-[#ecf0f1]">داشبورد</h3>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="border border-gray-700 bg-gray-900 p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-blue-100 rounded-full">
+                                    <i class="fas fa-box text-blue-600 text-xl"></i>
+                                </div>
+                                <div class="mr-4">
+                                    <h4 class="text-[#ecf0f1] text-[14px]">تعداد محصولات</h4>
+                                    <p class="text-lg font-bold text-[#ecf0f1]" id="dashboard-products-count">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-700 bg-gray-900 p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-green-100 rounded-full">
+                                    <i class="fas fa-shopping-cart text-green-600 text-xl"></i>
+                                </div>
+                                <div class="mr-4">
+                                    <h4 class="text-[#ecf0f1] text-[14px]">تعداد سفارشات</h4>
+                                    <p class="text-lg font-bold text-[#ecf0f1]" id="dashboard-orders-count">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-700 bg-gray-900 p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-yellow-100 rounded-full">
+                                    <i class="fas fa-images text-yellow-600 text-xl"></i>
+                                </div>
+                                <div class="mr-4">
+                                    <h4 class="text-[#ecf0f1] text-[14px]">تعداد تصاویر</h4>
+                                    <p class="text-lg font-bold text-[#ecf0f1]" id="dashboard-images-count">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-700 bg-gray-900 p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-purple-100 rounded-full">
+                                    <i class="fas fa-sliders-h text-purple-600 text-xl"></i>
+                                </div>
+                                <div class="mr-4">
+                                    <h4 class="text-[#ecf0f1] text-[14px]">تعداد اسلایدها</h4>
+                                    <p class="text-lg font-bold text-[#ecf0f1]" id="dashboard-slides-count">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-gray-700 bg-gray-900 p-6 rounded-lg shadow">
+                        <h4 class="text-lg text-[#ecf0f1]  mb-4">خلاصه فعالیت‌ها</h4>
+                        <p class="text-gray-600">به پنل مدیریت خوش آمدید. از منوی سمت راست می‌توانید بخش‌های مختلف را مدیریت کنید.</p>
+                    </div>
+                </div>
+                
+                <!-- Content Management Section -->
+                <div id="content-section" class="admin-section ">
+                    <h3 class="text-lg  mb-6 text-[#ecf0f1]">مدیریت محتوا</h3>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow ">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block font-semibold mb-2">عنوان سایت:</label>
+                                <input type="text" id="admin-site-title" class="w-full p-3 border rounded-lg">
+                            </div>
+                            
+                            <div>
+                                <label class="block font-semibold mb-2">متن درباره ما:</label>
+                                <textarea id="admin-about-text" class="w-full p-3 border rounded-lg" rows="6"></textarea>
+                            </div>
+                            
+                            <button id="update-content" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition">
+                                <i class="fas fa-save ml-2"></i>
+                                بروزرسانی محتوا
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Management Section -->
+                <div id="images-section" class="admin-section ">
+                    <h3 class="text-lg mb-6 text-[#ecf0f1]">مدیریت تصاویر</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6  ">
+                        <div class="border bg-white p-6 rounded-[16px] shadow">
+                            <h4 class="text-lg  font-bold mb-4">آپلود تصاویر</h4>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block  font-semibold mb-2">لوگو:</label>
+                                    <input type="file" id="admin-logo-file" accept="image/*" class="w-full  p-2 bg-white border border-[#bdc3c7]  rounded-[9px]">
+                                    <button onclick="uploadLogo()" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                        آپلود لوگو
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold mb-2 ">تصویر اسلاید:</label>
+                                    <input type="file" id="slide-image-file" accept="image/*" class="w-full p-2 bg-white border border-[#bdc3c7] rounded-[9px]">
+                                    <button onclick="uploadSlideImage()" class="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                        آپلود تصویر اسلاید
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold mb-2 ">تصویر محصول:</label>
+                                    <input type="file" id="product-image-file" accept="image/*" class="w-full p-2 bg-white border border-[#bdc3c7] border rounded-[9px]">
+                                    <button onclick="uploadProductImage()" class="mt-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                                        آپلود تصویر محصول
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-700 bg-gray-900 p-6 rounded-[16px] shadow">
+                            <h4 class="text-lg text-[#ecf0f1]  mb-4">تصاویر آپلود شده</h4>
+                            <div id="uploaded-images" class="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+                                <!-- Uploaded images will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slider Management Section -->
+                <div id="slider-section" class="admin-section">
+                    <h3 class="text-lg  mb-6 text-[#ecf0f1]">مدیریت اسلایدر</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h4 class="text-lg font-bold mb-4">افزودن اسلاید جدید</h4>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block font-semibold mb-2">عنوان اسلاید:</label>
+                                    <input type="text" id="slide-title" class="w-full p-3 border rounded-lg">
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold mb-2">توضیحات:</label>
+                                    <input type="text" id="slide-description" class="w-full p-3 border rounded-lg">
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold mb-2">تصویر اسلاید:</label>
+                                    <select id="slide-image-select" class="w-full p-3 border rounded-lg">
+                                        <option value="">انتخاب تصویر آپلود شده</option>
+                                    </select>
+                                </div>
+                                
+                                <button id="add-slide" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition">
+                                    <i class="fas fa-plus ml-2"></i>
+                                    افزودن اسلاید
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h4 class="text-lg font-bold mb-4">لیست اسلایدها</h4>
+                            <div id="slides-list" class="max-h-96 overflow-y-auto">
+                                <!-- Slides list will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Management Section -->
+                <div id="products-section" class="admin-section">
+                    <h3 class="text-lg mb-6 text-[#ecf0f1]">مدیریت محصولات</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h4 class="text-lg font-bold mb-4">افزودن/ویرایش محصول</h4>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block font-semibold mb-2">نام محصول:</label>
+                                    <input type="text" id="product-name" class="w-full p-3 border rounded-lg">
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold mb-2">قیمت (تومان):</label>
+                                    <input type="number" id="product-price" class="w-full p-3 border rounded-lg">
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold mb-2">دسته‌بندی:</label>
+                                    <input type="text" id="product-category" class="w-full p-3 border rounded-lg" placeholder="نام دسته‌بندی را وارد کنید">
+                                    <div class="mt-2">
+                                        <small class="text-gray-600">دسته‌بندی‌های موجود:</small>
+                                        <div id="existing-categories" class="flex flex-wrap gap-1 mt-1">
+                                            <!-- Categories will be shown here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold mb-2">تصویر محصول:</label>
+                                    <select id="product-image-select" class="w-full p-3 border rounded-lg">
+                                        <option value="">انتخاب تصویر آپلود شده</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="flex space-x-2 space-x-reverse">
+                                    <button id="add-product" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                        <i class="fas fa-plus ml-1"></i>
+                                        افزودن محصول
+                                    </button>
+                                    <button id="update-product" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hidden">
+                                        <i class="fas fa-edit ml-1"></i>
+                                        بروزرسانی محصول
+                                    </button>
+                                    <button id="cancel-edit" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 hidden">
+                                        لغو ویرایش
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-700 bg-gray-900 p-6 rounded-lg shadow">
+                            <h4 class="text-lg text-[#ecf0f1] mb-4">لیست محصولات</h4>
+                            <div id="products-list" class="max-h-96 overflow-y-auto">
+                                <!-- Products list will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Management Section -->
+                <div id="contact-section" class="admin-section">
+                    <h3 class="text-lg mb-6 text-[#ecf0f1]">مدیریت اطلاعات تماس</h3>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block font-semibold mb-2">آدرس کارخانه:</label>
+                                <input type="text" id="admin-address" class="w-full p-3 border rounded-lg">
+                            </div>
+                            
+                            <div>
+                                <label class="block font-semibold mb-2">شماره تلفن:</label>
+                                <input type="text" id="admin-phone" class="w-full p-3 border rounded-lg">
+                            </div>
+                            
+                            <div>
+                                <label class="block font-semibold mb-2">واتساپ:</label>
+                                <input type="text" id="admin-whatsapp" class="w-full p-3 border rounded-lg">
+                            </div>
+                            
+                            <div>
+                                <label class="block font-semibold mb-2">اینستاگرام:</label>
+                                <input type="text" id="admin-instagram" class="w-full p-3 border rounded-lg">
+                            </div>
+                            
+                            <div>
+                                <label class="block font-semibold mb-2">ایمیل:</label>
+                                <input type="email" id="admin-email" class="w-full p-3 border rounded-lg">
+                            </div>
+                            
+                            <button id="update-contact" class="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-save ml-2"></i>
+                                بروزرسانی اطلاعات تماس
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Orders Management Section -->
+                <div id="orders-section" class="admin-section">
+                    <h3 class="text-lg mb-6 text-[#ecf0f1]">مدیریت سفارشات</h3>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div id="orders-list" class="max-h-96 overflow-y-auto">
+                            <p class="text-gray-500">هیچ سفارشی ثبت نشده است</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">تکمیل خرید</h3>
+                <button id="close-checkout" class="text-red-500 text-2xl">&times;</button>
+            </div>
+            
+            <form id="checkout-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold mb-2">نام و نام خانوادگی:</label>
+                        <input type="text" id="customer-name" class="w-full p-3 border rounded" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block font-semibold mb-2">شماره تماس:</label>
+                        <input type="tel" id="customer-phone" class="w-full p-3 border rounded" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block font-semibold mb-2">آدرس:</label>
+                        <textarea id="customer-address" class="w-full p-3 border rounded" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded">
+                        <div class="flex justify-between mb-2">
+                            <span>مبلغ کل:</span>
+                            <span id="final-total">0 تومان</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span>مبلغ نهایی:</span>
+                            <span id="final-amount">0 تومان</span>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-lg text-lg font-bold transition">
+                        <i class="fas fa-credit-card ml-2"></i>
+                        پرداخت و ثبت سفارش
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content">
+            <div class="text-center">
+                <h3 class="text-xl font-bold mb-6">ورود به پنل مدیریت</h3>
+                <form id="admin-login-form">
+                    <input type="password" id="admin-password" placeholder="رمز عبور" class="w-full p-3 border rounded mb-4" required>
+                    <button type="submit" class="w-full bg-primary text-white py-3 rounded hover:bg-opacity-90 transition">
+                        ورود
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== سیستم ضد خرابی کامل ==========
+        
+        // تابع امن برای پیدا کردن عناصر
+        function safeGetElement(selector, fallbackValue = null) {
+            try {
+                const element = typeof selector === 'string' ? 
+                    document.querySelector(selector) : selector;
+                
+                if (!element) {
+                    console.warn(`Element not found: ${selector}`);
+                    return fallbackValue;
+                }
+                return element;
+            } catch (error) {
+                console.error(`Error finding element ${selector}:`, error);
+                return fallbackValue;
+            }
+        }
+        
+        // تابع امن برای تغییر محتوا
+        function safeSetContent(selector, content, property = 'textContent') {
+            const element = safeGetElement(selector);
+            if (element) {
+                try {
+                    element[property] = content;
+                    return true;
+                } catch (error) {
+                    console.error(`Error setting ${property} for ${selector}:`, error);
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+        // تابع امن برای گرفتن محتوا
+        function safeGetContent(selector, property = 'textContent', fallback = '') {
+            const element = safeGetElement(selector);
+            if (element) {
+                try {
+                    return element[property] || fallback;
+                } catch (error) {
+                    console.error(`Error getting ${property} from ${selector}:`, error);
+                    return fallback;
+                }
+            }
+            return fallback;
+        }
+        
+        // تابع امن برای اضافه کردن event listener
+        function safeAddEventListener(selector, event, handler) {
+            const element = safeGetElement(selector);
+            if (element && typeof handler === 'function') {
+                try {
+                    element.addEventListener(event, handler);
+                    return true;
+                } catch (error) {
+                    console.error(`Error adding event listener to ${selector}:`, error);
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+        // تابع امن برای تغییر استایل
+        function safeSetStyle(selector, styles) {
+            const element = safeGetElement(selector);
+            if (element && typeof styles === 'object') {
+                try {
+                    Object.assign(element.style, styles);
+                    return true;
+                } catch (error) {
+                    console.error(`Error setting styles for ${selector}:`, error);
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+        // تابع امن برای تغییر کلاس‌ها
+        function safeToggleClass(selector, className, force = null) {
+            const element = safeGetElement(selector);
+            if (element) {
+                try {
+                    if (force !== null) {
+                        element.classList.toggle(className, force);
+                    } else {
+                        element.classList.toggle(className);
+                    }
+                    return true;
+                } catch (error) {
+                    console.error(`Error toggling class ${className} for ${selector}:`, error);
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+        // Global Variables
+        let currentSlide = 0;
+        let slides = [
+            { title: 'سوهان اصفهانی', description: 'طعم اصیل و سنتی' },
+            { title: 'گز نقل', description: 'بهترین کیفیت از اصفهان' },
+            { title: 'محصولات ویژه', description: 'تنوع بی‌نظیر در طعم‌ها' }
+        ];
+        
+        let products = [
+            { id: 1, name: 'سوهان اصفهانی', price: 150000, category: 'sohan' },
+            { id: 2, name: 'گز نقل', price: 120000, category: 'gaz' },
+            { id: 3, name: 'سوهان پسته‌ای', price: 180000, category: 'sohan' },
+            { id: 4, name: 'گز بادامی', price: 160000, category: 'gaz' },
+            { id: 5, name: 'پک ویژه', price: 250000, category: 'special' },
+            { id: 6, name: 'سوهان زعفرانی', price: 200000, category: 'special' }
+        ];
+        
+        let cart = [];
+        let orders = [];
+        let uploadedImages = [];
+
+        // Slider Functions
+        function initializeSlider() {
+            const slider = safeGetElement('#slider');
+            if (!slider) return;
+            
+            slider.innerHTML = '';
+            
+            slides.forEach((slide, index) => {
+                const slideElement = document.createElement('div');
+                slideElement.className = `slide ${index === 0 ? 'active' : ''}`;
+                
+                slideElement.innerHTML = `
+                    <div class="w-full h-full relative bg-gradient-to-br from-primary to-gray-800">
+                        ${slide.image && slide.image.trim() !== '' ? 
+                            `<div class="w-full h-full relative">
+                                <img src="${slide.image}" alt="${slide.title}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                                <div class="absolute bottom-0 left-0 right-0 text-white p-4 md:p-8 bg-gradient-to-t from-black via-black/70 to-transparent">
+                                    <div class="max-w-6xl mx-auto text-center md:text-right">
+                                        <h3 class="text-2xl md:text-5xl font-bold mb-2 md:mb-4">${slide.title}</h3>
+                                        <p class="text-base md:text-xl">${slide.description}</p>
+                                    </div>
+                                </div>
+                            </div>` :
+                            `<div class="w-full h-full flex items-center justify-center relative">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <i class="fas fa-cookie-bite text-9xl text-yellow-400 opacity-30"></i>
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 text-white p-4 md:p-8 bg-gradient-to-t from-black via-black/70 to-transparent">
+                                    <div class="max-w-6xl mx-auto text-center">
+                                        <h3 class="text-2xl md:text-5xl font-bold mb-2 md:mb-4">${slide.title}</h3>
+                                        <p class="text-base md:text-xl">${slide.description}</p>
+                                    </div>
+                                </div>
+                            </div>`
+                        }
+                    </div>
+                `;
+                slider.appendChild(slideElement);
+            });
+        }
+
+        function nextSlide() {
+            const slideElements = document.querySelectorAll('.slide');
+            if (slideElements.length === 0) return;
+            
+            slideElements[currentSlide]?.classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slideElements[currentSlide]?.classList.add('active');
+        }
+
+        function prevSlide() {
+            const slideElements = document.querySelectorAll('.slide');
+            if (slideElements.length === 0) return;
+            
+            slideElements[currentSlide]?.classList.remove('active');
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            slideElements[currentSlide]?.classList.add('active');
+        }
+
+        // Product Functions
+        function renderProducts(category = 'all') {
+            const grid = safeGetElement('#products-grid');
+            if (!grid) return;
+            
+            const filteredProducts = category === 'all' ? products : products.filter(p => p.category === category);
+            
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="product-card border border-gray-700 bg-gray-900 rounded-[15px] shadow-lg overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        ${product.image ? 
+                            `<img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                             <div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center" style="display: none;">
+                                <i class="fas fa-cookie-bite text-6xl text-white"></i>
+                             </div>` :
+                            `<div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                                <i class="fas fa-cookie-bite text-6xl text-white"></i>
+                             </div>`
+                        }
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-[14px] text-[#ecf0f1] font-bold text-primary mb-2">${product.name}</h3>
+                        <p class="text-[#bdc3c7] text-[12px] mb-4">محصول اصیل و با کیفیت</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[12px] text-[#bdc3c7] font-bold text-primary">${product.price.toLocaleString()} تومان</span>
+                            <button onclick="addToCart(${product.id})" class="bg-yellow-600 text-[10px] hover:bg-yellow-500 text-white px-2 py-2 rounded transition">
+                                افزودن به سبد
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setupCategoryFilterListeners() {
+            document.querySelectorAll('.category-filter').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.category-filter').forEach(btn => {
+                        btn.classList.remove('active', 'bg-primary', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-primary');
+                    });
+                    
+                    this.classList.add('active', 'bg-primary', 'text-white');
+                    this.classList.remove('bg-gray-200', 'text-primary');
+                    
+                    renderProducts(this.dataset.category);
+                });
+            });
+        }
+
+        // Cart Functions
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCartDisplay();
+            showNotification('محصول به سبد خرید اضافه شد');
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDisplay();
+        }
+
+        function updateQuantity(productId, quantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = Math.max(1, quantity);
+                updateCartDisplay();
+            }
+        }
+
+        function updateCartDisplay() {
+            const cartItems = safeGetElement('#cart-items');
+            const cartCount = safeGetElement('#cart-count');
+            const cartSummary = safeGetElement('#cart-summary');
+            const cartTotal = safeGetElement('#cart-total');
+            
+            if (cartCount) {
+                cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+            }
+            
+            if (!cartItems) return;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-center text-gray-500">سبد خرید شما خالی است</p>';
+                safeToggleClass('#cart-summary', 'hidden', true);
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item border border-gray-700">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4 space-x-reverse">
+                                <div class="w-16 h-16 rounded overflow-hidden">
+                                    ${item.image ? 
+                                        `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                         <div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center" style="display: none;">
+                                            <i class="fas fa-cookie-bite text-2xl text-white"></i>
+                                         </div>` :
+                                        `<div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                                            <i class="fas fa-cookie-bite text-2xl text-white"></i>
+                                         </div>`
+                                    }
+                                </div>
+                                <div>
+                                    <h4 class="text-[15px] text-[#ecf0f1] ">${item.name}</h4>
+                                    <p class="text-[#ecf0f1]">${item.price.toLocaleString()} تومان</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 space-x-reverse">
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="bg-gray-200 px-2 py-1 rounded">-</button>
+                                <span class="px-3  text-[#bdc3c7]">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="bg-gray-200 px-2 py-1 rounded">+</button>
+                                <button onclick="removeFromCart(${item.id})" class="bg-red-500 text-white px-3 py-1 rounded mr-2">حذف</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                if (cartTotal) {
+                    cartTotal.textContent = total.toLocaleString() + ' تومان';
+                }
+                safeToggleClass('#cart-summary', 'hidden', false);
+            }
+        }
+
+        // Admin Functions
+        function showAdminLogin() {
+            safeSetStyle('#admin-login-modal', { display: 'block' });
+        }
+
+        function showAdminPanel() {
+            safeSetStyle('#admin-panel', { display: 'block' });
+            loadAdminData();
+            updateDashboard();
+            setupAdminNavigation();
+        }
+
+        function setupAdminNavigation() {
+            document.querySelectorAll('.admin-menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionName = this.dataset.section;
+                    
+                    // Remove active class from all menu items
+                    document.querySelectorAll('.admin-menu-item').forEach(menuItem => {
+                        menuItem.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    document.querySelectorAll('.admin-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    // Show selected section
+                    const targetSection = safeGetElement('#' + sectionName + '-section');
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function updateDashboard() {
+            safeSetContent('#dashboard-products-count', products.length);
+            safeSetContent('#dashboard-orders-count', orders.length);
+            safeSetContent('#dashboard-images-count', uploadedImages.length);
+            safeSetContent('#dashboard-slides-count', slides.length);
+        }
+
+        function loadAdminData() {
+            const siteTitle = safeGetContent('#site-title');
+            const aboutText = safeGetContent('#about-text');
+            const factoryAddress = safeGetContent('#factory-address');
+            const phoneNumber = safeGetContent('#phone-number');
+            const whatsappNumber = safeGetContent('#whatsapp-number');
+            const instagramHandle = safeGetContent('#instagram-handle');
+            const emailAddress = safeGetContent('#email-address');
+            
+            safeSetContent('#admin-site-title', siteTitle, 'value');
+            safeSetContent('#admin-about-text', aboutText, 'value');
+            safeSetContent('#admin-address', factoryAddress, 'value');
+            safeSetContent('#admin-phone', phoneNumber, 'value');
+            safeSetContent('#admin-whatsapp', whatsappNumber, 'value');
+            safeSetContent('#admin-instagram', instagramHandle, 'value');
+            safeSetContent('#admin-email', emailAddress, 'value');
+            
+            updateSlidesList();
+            updateOrdersList();
+            updateProductsList();
+            updateUploadedImagesDisplay();
+            updateImageSelects();
+            updateExistingCategories();
+        }
+
+        function updateSlidesList() {
+            const slidesList = safeGetElement('#slides-list');
+            if (!slidesList) return;
+            
+            slidesList.innerHTML = slides.map((slide, index) => `
+                <div class="flex justify-between items-center p-2 bg-white rounded mb-2">
+                    <span>${slide.title}</span>
+                    <button onclick="removeSlide(${index})" class="text-red-500">حذف</button>
+                </div>
+            `).join('');
+        }
+
+        function updateOrdersList() {
+            const ordersList = safeGetElement('#orders-list');
+            if (!ordersList) return;
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p class="text-gray-500">هیچ سفارشی ثبت نشده است</p>';
+            } else {
+                ordersList.innerHTML = orders.map(order => `
+                    <div class="bg-white p-3 rounded mb-2">
+                        <div class="font-bold">${order.customerName}</div>
+                        <div class="text-sm text-gray-600">تلفن: ${order.customerPhone}</div>
+                        <div class="text-sm text-gray-600">آدرس: ${order.customerAddress}</div>
+                        <div class="text-sm">محصولات: ${order.items.map(item => `${item.name} (${item.quantity})`).join(', ')}</div>
+                        <div class="font-bold text-primary">مبلغ: ${order.total.toLocaleString()} تومان</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateProductsList() {
+            const productsList = safeGetElement('#products-list');
+            if (!productsList) return;
+            
+            if (products.length === 0) {
+                productsList.innerHTML = '<p class="text-gray-500">هیچ محصولی وجود ندارد</p>';
+            } else {
+                productsList.innerHTML = products.map(product => `
+                    <div class="flex justify-between items-center   rounded mb-2">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="w-12 h-12 rounded overflow-hidden">
+                                ${product.image ? 
+                                    `<img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                     <div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center" style="display: none;">
+                                        <i class="fas fa-cookie-bite text-white"></i>
+                                     </div>` :
+                                    `<div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                                        <i class="fas fa-cookie-bite text-white"></i>
+                                     </div>`
+                                }
+                            </div>
+                            <div>
+                                <div class="font-semibold text-[11px] text-[#ecf0f1]">${product.name}</div>
+                                <div class="text-[10px] text-[#bdc3c7]">${product.price.toLocaleString()} تومان - ${product.category}</div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 space-x-reverse">
+                            <button onclick="editProduct(${product.id})" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                                ویرایش
+                            </button>
+                            <button onclick="deleteProduct(${product.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getUniqueCategories() {
+            const categories = [...new Set(products.map(p => p.category))];
+            return categories.filter(cat => cat && cat.trim() !== '');
+        }
+
+        function updateCategoryFilters() {
+            const categoryFilters = safeGetElement('#category-filters');
+            if (!categoryFilters) return;
+            
+            const uniqueCategories = getUniqueCategories();
+            
+            categoryFilters.innerHTML = `
+                <button class="category-filter active bg-primary text-white px-6 py-2 rounded-full mb-2" data-category="all">همه محصولات</button>
+                ${uniqueCategories.map(category => `
+                    <button class="category-filter bg-gray-200 text-primary px-6 py-2 rounded-full mb-2 hover:bg-primary hover:text-white transition" data-category="${category}">${category}</button>
+                `).join('')}
+            `;
+            
+            setupCategoryFilterListeners();
+        }
+
+        function updateExistingCategories() {
+            const existingCategoriesDiv = safeGetElement('#existing-categories');
+            if (!existingCategoriesDiv) return;
+            
+            const uniqueCategories = getUniqueCategories();
+            
+            existingCategoriesDiv.innerHTML = uniqueCategories.map(category => `
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm cursor-pointer hover:bg-blue-200" onclick="selectCategory('${category}')">${category}</span>
+            `).join('');
+        }
+
+        function selectCategory(category) {
+            safeSetContent('#product-category', category, 'value');
+        }
+
+        // Image Upload Functions
+        function uploadLogo() {
+            const fileInput = safeGetElement('#admin-logo-file');
+            if (!fileInput || !fileInput.files[0]) return;
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                safeSetContent('#logo', imageData, 'src');
+                safeSetContent('#footer-logo', imageData, 'src');
+                
+                const imageObj = {
+                    id: Date.now(),
+                    name: 'لوگو - ' + file.name,
+                    data: imageData,
+                    type: 'logo'
+                };
+                uploadedImages.push(imageObj);
+                updateUploadedImagesDisplay();
+                updateImageSelects();
+                updateDashboard();
+                
+                showNotification('لوگو با موفقیت آپلود شد');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function uploadSlideImage() {
+            const fileInput = safeGetElement('#slide-image-file');
+            if (!fileInput || !fileInput.files[0]) return;
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                
+                const imageObj = {
+                    id: Date.now(),
+                    name: 'اسلاید - ' + file.name,
+                    data: imageData,
+                    type: 'slide'
+                };
+                uploadedImages.push(imageObj);
+                updateUploadedImagesDisplay();
+                updateImageSelects();
+                updateDashboard();
+                
+                showNotification('تصویر اسلاید با موفقیت آپلود شد');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function uploadProductImage() {
+            const fileInput = safeGetElement('#product-image-file');
+            if (!fileInput || !fileInput.files[0]) return;
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                
+                const imageObj = {
+                    id: Date.now(),
+                    name: 'محصول - ' + file.name,
+                    data: imageData,
+                    type: 'product'
+                };
+                uploadedImages.push(imageObj);
+                updateUploadedImagesDisplay();
+                updateImageSelects();
+                updateDashboard();
+                
+                showNotification('تصویر محصول با موفقیت آپلود شد');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateUploadedImagesDisplay() {
+            const container = safeGetElement('#uploaded-images');
+            if (!container) return;
+            
+            container.innerHTML = uploadedImages.map(img => `
+                <div class="relative">
+                    <img src="${img.data}" alt="${img.name}" class="w-full h-20 object-cover rounded">
+                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 rounded-b">
+                        ${img.name}
+                    </div>
+                    <button onclick="removeUploadedImage(${img.id})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+                </div>
+            `).join('');
+        }
+
+        function updateImageSelects() {
+            const slideSelect = safeGetElement('#slide-image-select');
+            const productSelect = safeGetElement('#product-image-select');
+            
+            if (slideSelect) {
+                slideSelect.innerHTML = '<option value="">انتخاب تصویر آپلود شده</option>';
+                uploadedImages.forEach(img => {
+                    slideSelect.innerHTML += `<option value="${img.data}">${img.name}</option>`;
+                });
+            }
+            
+            if (productSelect) {
+                productSelect.innerHTML = '<option value="">انتخاب تصویر آپلود شده</option>';
+                uploadedImages.forEach(img => {
+                    productSelect.innerHTML += `<option value="${img.data}">${img.name}</option>`;
+                });
+            }
+        }
+
+        function removeUploadedImage(imageId) {
+            uploadedImages = uploadedImages.filter(img => img.id !== imageId);
+            updateUploadedImagesDisplay();
+            updateImageSelects();
+            showNotification('تصویر حذف شد');
+        }
+
+        function addSlide() {
+            const title = safeGetContent('#slide-title', 'value');
+            const description = safeGetContent('#slide-description', 'value');
+            const image = safeGetContent('#slide-image-select', 'value');
+            
+            if (title && description) {
+                const newSlide = { 
+                    title: title, 
+                    description: description, 
+                    image: image || '' 
+                };
+                slides.push(newSlide);
+                
+                currentSlide = 0;
+                
+                initializeSlider();
+                updateSlidesList();
+                updateDashboard();
+                
+                safeSetContent('#slide-title', '', 'value');
+                safeSetContent('#slide-description', '', 'value');
+                safeSetContent('#slide-image-select', '', 'value');
+                
+                showNotification('اسلاید جدید اضافه شد');
+            } else {
+                showNotification('لطفاً عنوان و توضیحات را وارد کنید');
+            }
+        }
+
+        function removeSlide(index) {
+            slides.splice(index, 1);
+            initializeSlider();
+            updateSlidesList();
+            updateDashboard();
+            showNotification('اسلاید حذف شد');
+        }
+
+        let editingProductId = null;
+
+        function addProduct() {
+            const name = safeGetContent('#product-name', 'value');
+            const price = parseInt(safeGetContent('#product-price', 'value')) || 0;
+            const category = safeGetContent('#product-category', 'value').trim();
+            const image = safeGetContent('#product-image-select', 'value');
+            
+            if (name && price && category) {
+                const newId = Math.max(...products.map(p => p.id), 0) + 1;
+                products.push({ id: newId, name, price, category, image });
+                renderProducts();
+                updateProductsList();
+                updateCategoryFilters();
+                updateExistingCategories();
+                updateDashboard();
+                clearProductForm();
+                showNotification('محصول جدید اضافه شد');
+            } else {
+                showNotification('لطفاً تمام فیلدها را پر کنید');
+            }
+        }
+
+        function editProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                editingProductId = productId;
+                
+                safeSetContent('#product-name', product.name, 'value');
+                safeSetContent('#product-price', product.price, 'value');
+                safeSetContent('#product-category', product.category, 'value');
+                safeSetContent('#product-image-select', product.image || '', 'value');
+                
+                safeToggleClass('#add-product', 'hidden', true);
+                safeToggleClass('#update-product', 'hidden', false);
+                safeToggleClass('#cancel-edit', 'hidden', false);
+            }
+        }
+
+        function updateProduct() {
+            if (editingProductId) {
+                const name = safeGetContent('#product-name', 'value');
+                const price = parseInt(safeGetContent('#product-price', 'value')) || 0;
+                const category = safeGetContent('#product-category', 'value').trim();
+                const image = safeGetContent('#product-image-select', 'value');
+                
+                if (name && price && category) {
+                    const productIndex = products.findIndex(p => p.id === editingProductId);
+                    if (productIndex !== -1) {
+                        products[productIndex] = { 
+                            id: editingProductId, 
+                            name, 
+                            price, 
+                            category, 
+                            image 
+                        };
+                        
+                        renderProducts();
+                        updateProductsList();
+                        updateCategoryFilters();
+                        updateExistingCategories();
+                        updateDashboard();
+                        clearProductForm();
+                        cancelEdit();
+                        showNotification('محصول بروزرسانی شد');
+                    }
+                } else {
+                    showNotification('لطفاً تمام فیلدها را پر کنید');
+                }
+            }
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('آیا مطمئن هستید که می‌خواهید این محصول را حذف کنید؟')) {
+                products = products.filter(p => p.id !== productId);
+                cart = cart.filter(item => item.id !== productId);
+                
+                renderProducts();
+                updateProductsList();
+                updateCategoryFilters();
+                updateExistingCategories();
+                updateCartDisplay();
+                updateDashboard();
+                showNotification('محصول حذف شد');
+            }
+        }
+
+        function cancelEdit() {
+            editingProductId = null;
+            clearProductForm();
+            
+            safeToggleClass('#add-product', 'hidden', false);
+            safeToggleClass('#update-product', 'hidden', true);
+            safeToggleClass('#cancel-edit', 'hidden', true);
+        }
+
+        function clearProductForm() {
+            safeSetContent('#product-name', '', 'value');
+            safeSetContent('#product-price', '', 'value');
+            safeSetContent('#product-category', '', 'value');
+            safeSetContent('#product-image-select', '', 'value');
+        }
+
+        // Checkout Functions
+        function showCheckout() {
+            if (cart.length === 0) {
+                showNotification('سبد خرید شما خالی است');
+                return;
+            }
+            
+            const modal = safeGetElement('#checkout-modal');
+            const shippingRadio = document.querySelector('input[name="shipping"]:checked');
+            const shippingCost = shippingRadio?.value === 'express' ? 50000 : 0;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + shippingCost;
+            
+            safeSetContent('#final-total', subtotal.toLocaleString() + ' تومان');
+            safeSetContent('#final-amount', total.toLocaleString() + ' تومان');
+            
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+        function processOrder(event) {
+            event.preventDefault();
+            
+            const customerName = safeGetContent('#customer-name', 'value');
+            const customerPhone = safeGetContent('#customer-phone', 'value');
+            const customerAddress = safeGetContent('#customer-address', 'value');
+            
+            const shippingRadio = document.querySelector('input[name="shipping"]:checked');
+            const shippingCost = shippingRadio?.value === 'express' ? 50000 : 0;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + shippingCost;
+            
+            const order = {
+                id: Date.now(),
+                customerName,
+                customerPhone,
+                customerAddress,
+                items: [...cart],
+                total,
+                date: new Date().toLocaleDateString('fa-IR')
+            };
+            
+            orders.push(order);
+            cart = [];
+            updateCartDisplay();
+            
+            if (safeGetElement('#admin-panel')?.style.display === 'block') {
+                updateOrdersList();
+                updateDashboard();
+            }
+            
+            safeSetStyle('#checkout-modal', { display: 'none' });
+            showNotification('سفارش شما با موفقیت ثبت شد');
+            
+            const form = safeGetElement('#checkout-form');
+            if (form) form.reset();
+        }
+
+        // Utility Functions
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function smoothScroll(target) {
+            const element = safeGetElement(target);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('a[href^="#"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href');
+                    smoothScroll(target);
+                });
+            });
+
+            // Mobile menu
+            safeAddEventListener('#mobile-menu', 'click', function() {
+                safeToggleClass('#mobile-nav', 'translate-x-full');
+                safeToggleClass('#mobile-overlay', 'hidden');
+            });
+            
+            safeAddEventListener('#mobile-overlay', 'click', function() {
+                safeToggleClass('#mobile-nav', 'translate-x-full', true);
+                safeToggleClass('#mobile-overlay', 'hidden', true);
+            });
+            
+            document.querySelectorAll('#mobile-nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    safeToggleClass('#mobile-nav', 'translate-x-full', true);
+                    safeToggleClass('#mobile-overlay', 'hidden', true);
+                });
+            });
+
+            // Slider controls
+            safeAddEventListener('#next-slide', 'click', nextSlide);
+            safeAddEventListener('#prev-slide', 'click', prevSlide);
+            
+            setInterval(nextSlide, 5000);
+
+            setupCategoryFilterListeners();
+
+            safeAddEventListener('#cart-btn', 'click', function() {
+                smoothScroll('#cart');
+            });
+
+            safeAddEventListener('#checkout-btn', 'click', showCheckout);
+            safeAddEventListener('#checkout-form', 'submit', processOrder);
+
+            // Admin shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.altKey && e.key === 'a') {
+                    e.preventDefault();
+                    showAdminLogin();
+                }
+            });
+
+            // Admin login
+            safeAddEventListener('#admin-login-form', 'submit', function(e) {
+                e.preventDefault();
+                const password = safeGetContent('#admin-password', 'value');
+                if (password === 'admin123') {
+                    safeSetStyle('#admin-login-modal', { display: 'none' });
+                    showAdminPanel();
+                } else {
+                    showNotification('رمز عبور اشتباه است');
+                }
+            });
+
+            // Admin panel controls
+            safeAddEventListener('#close-admin', 'click', function() {
+                safeSetStyle('#admin-panel', { display: 'none' });
+            });
+
+            safeAddEventListener('#close-checkout', 'click', function() {
+                safeSetStyle('#checkout-modal', { display: 'none' });
+            });
+
+            safeAddEventListener('#update-content', 'click', function() {
+                const siteTitle = safeGetContent('#admin-site-title', 'value');
+                const aboutText = safeGetContent('#admin-about-text', 'value');
+                
+                safeSetContent('#site-title', siteTitle);
+                safeSetContent('#about-text', aboutText);
+                showNotification('محتوا بروزرسانی شد');
+            });
+
+            safeAddEventListener('#update-contact', 'click', function() {
+                const address = safeGetContent('#admin-address', 'value');
+                const phone = safeGetContent('#admin-phone', 'value');
+                const whatsapp = safeGetContent('#admin-whatsapp', 'value');
+                const instagram = safeGetContent('#admin-instagram', 'value');
+                const email = safeGetContent('#admin-email', 'value');
+                
+                safeSetContent('#factory-address', address);
+                safeSetContent('#phone-number', phone);
+                safeSetContent('#whatsapp-number', whatsapp);
+                safeSetContent('#instagram-handle', instagram);
+                safeSetContent('#email-address', email);
+                showNotification('اطلاعات تماس بروزرسانی شد');
+            });
+
+            safeAddEventListener('#add-slide', 'click', addSlide);
+            safeAddEventListener('#add-product', 'click', addProduct);
+            safeAddEventListener('#update-product', 'click', updateProduct);
+            safeAddEventListener('#cancel-edit', 'click', cancelEdit);
+
+            // Contact form
+            safeAddEventListener('#contact-form', 'submit', function(e) {
+                e.preventDefault();
+                showNotification('پیام شما ارسال شد');
+                this.reset();
+            });
+
+            // Close modals on outside click
+            window.addEventListener('click', function(e) {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+                
+                if (e.target === safeGetElement('#admin-panel')) {
+                    safeSetStyle('#admin-panel', { display: 'none' });
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                initializeSlider();
+                renderProducts();
+                updateCategoryFilters();
+                setupEventListeners();
+                updateCartDisplay();
+                
+                console.log('✅ سیستم ضد خرابی فعال شد - همه چیز آماده است!');
+            } catch (error) {
+                console.error('خطا در راه‌اندازی:', error);
+                showNotification('خطا در راه‌اندازی سیستم');
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'989cc54a66d1292f',t:'MTc1OTY2NTc1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
